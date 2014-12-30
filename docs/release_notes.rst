@@ -1,6 +1,66 @@
 Release notes
 =============
 
+1.20.2
+------
+
+**Release date:** 2014-12-23
+
+- Output failed to show floats and crashed the daemon (`#229 <https://github.com/sebdah/dynamic-dynamodb/issues/229>`__). Thanks `@nickveenhof <https://github.com/nickveenhof>`__ for the pull request.
+
+1.20.1
+------
+
+**Release date:** 2014-12-22
+
+- Updated retrying version to 1.3.3 (`#218 <https://github.com/sebdah/dynamic-dynamodb/issues/218>`__)
+
+1.20.0
+------
+
+**Release date:** 2014-12-22
+
+- Faster Up-scaling Based on Consumed Read/Write (`#227 <https://github.com/sebdah/dynamic-dynamodb/issues/227>`__)
+
+Thanks `@pragnesh <https://github.com/pragnesh>`__ for the help with this release
+
+1.19.2
+------
+
+**Release date:** 2014-11-29
+
+- Remove 100% increase limit in configuration validation (`#225 <https://github.com/sebdah/dynamic-dynamodb/issues/225>`__)
+
+1.19.1
+------
+
+**Release date:** 2014-11-19
+
+- Fixed bug when disabling read and writes up/down scaling separately (`#221 <https://github.com/sebdah/dynamic-dynamodb/issues/221>`__)
+
+1.19.0
+------
+
+**Release date:** 2014-10-16
+
+- Support for DynamoDBs new flexible scaling (`#207 <https://github.com/sebdah/dynamic-dynamodb/issues/207>`__)
+- Fixed a bug with consecutive checks for GSIs (`#206 <https://github.com/sebdah/dynamic-dynamodb/issues/206>`__)
+- Typo in log message when auto scaling of table writes was disabled (`#209 <https://github.com/sebdah/dynamic-dynamodb/issues/209>`__)
+
+1.18.5
+------
+
+**Release date:** 2014-09-26
+
+- Weird behavior when a single table is matched by multiple regexes (`#203 <https://github.com/sebdah/dynamic-dynamodb/issues/203>`__)
+
+1.18.4
+------
+
+**Release date:** 2014-09-25
+
+- Tables should automatically scale up if below their minimums (`#202 <https://github.com/sebdah/dynamic-dynamodb/issues/202>`__)
+
 1.18.3
 ------
 

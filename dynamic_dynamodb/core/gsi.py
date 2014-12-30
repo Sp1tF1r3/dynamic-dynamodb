@@ -189,6 +189,8 @@ def __ensure_provisioning_reads(
         throttled_reads_upper_threshold = \
             get_gsi_option(
                 table_key, gsi_key, 'throttled_reads_upper_threshold')
+        min_provisioned_reads = \
+            get_gsi_option(table_key, gsi_key, 'min_provisioned_reads')
         max_provisioned_reads = \
             get_gsi_option(table_key, gsi_key, 'max_provisioned_reads')
         num_read_checks_before_scale_down = \
@@ -247,12 +249,14 @@ def __ensure_provisioning_reads(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_read_units != calculated_provisioning:
@@ -274,12 +278,14 @@ def __ensure_provisioning_reads(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_read_units != calculated_provisioning:
@@ -330,8 +336,25 @@ def __ensure_provisioning_reads(
             update_needed = True
             updated_read_units = int(max_provisioned_reads)
             logger.info(
-                'Will not increase writes over gsi-max-provisioned-reads '
-                'limit ({0} writes)'.format(updated_read_units))
+                '{0} - GSI: {1} - Will not increase writes over '
+                'gsi-max-provisioned-reads '
+                'limit ({2} writes)'.format(
+                    table_name,
+                    gsi_name,
+                    updated_read_units))
+
+    # Ensure that we have met the min-provisioning
+    if min_provisioned_reads:
+        if int(min_provisioned_reads) > int(updated_read_units):
+            update_needed = True
+            updated_read_units = int(min_provisioned_reads)
+            logger.info(
+                '{0} - GSI: {1} - Increasing reads to'
+                'meet gsi-min-provisioned-reads '
+                'limit ({2} reads)'.format(
+                    table_name,
+                    gsi_name,
+                    updated_read_units))
 
     logger.info('{0} - GSI: {1} - Consecutive read checks {2}/{3}'.format(
         table_name,
@@ -394,6 +417,8 @@ def __ensure_provisioning_writes(
             get_gsi_option(table_key, gsi_key, 'decrease_writes_unit')
         decrease_writes_with = \
             get_gsi_option(table_key, gsi_key, 'decrease_writes_with')
+        min_provisioned_writes = \
+            get_gsi_option(table_key, gsi_key, 'min_provisioned_writes')
         max_provisioned_writes = \
             get_gsi_option(table_key, gsi_key, 'max_provisioned_writes')
         num_write_checks_before_scale_down = \
@@ -452,6 +477,7 @@ def __ensure_provisioning_writes(
                         increase_writes_with,
                         get_gsi_option(
                             table_key, gsi_key, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
@@ -459,6 +485,7 @@ def __ensure_provisioning_writes(
                     increase_writes_with,
                     get_gsi_option(
                         table_key, gsi_key, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
@@ -481,6 +508,7 @@ def __ensure_provisioning_writes(
                         increase_writes_with,
                         get_gsi_option(
                             table_key, gsi_key, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
@@ -488,6 +516,7 @@ def __ensure_provisioning_writes(
                     increase_writes_with,
                     get_gsi_option(
                         table_key, gsi_key, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
@@ -542,6 +571,19 @@ def __ensure_provisioning_writes(
             logger.info(
                 '{0} - GSI: {1} - '
                 'Will not increase writes over gsi-max-provisioned-writes '
+                'limit ({2} writes)'.format(
+                    table_name,
+                    gsi_name,
+                    updated_write_units))
+
+    # Ensure that we have met the min-provisioning
+    if min_provisioned_writes:
+        if int(min_provisioned_writes) > int(updated_write_units):
+            update_needed = True
+            updated_write_units = int(min_provisioned_writes)
+            logger.info(
+                '{0} - GSI: {1} - Increasing writes to'
+                'meet gsi-min-provisioned-writes '
                 'limit ({2} writes)'.format(
                     table_name,
                     gsi_name,
